@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+import random
 import markdown
 from . import util
 
@@ -72,3 +73,8 @@ def create(request):
     
     # If GET request, show the create form
     return render(request, "encyclopedia/create.html")
+
+def random_page(request):
+    entries = util.list_entries()
+    chosen_entry = random.choice(entries)
+    return redirect("entry", title=chosen_entry)
