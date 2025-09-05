@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 import markdown
 from . import util
 
@@ -52,3 +54,21 @@ def search(request):
         "query": query,
         "results": results
     })
+
+def create(request):
+    if request.method == "POST":
+        title = request.POST.get("title")
+        content = request.POST.get("content")
+        
+        # Check if entry already exists
+        if title.lower() in [entry.lower() for entry in util.list_entries()]:
+            return render(request, "encyclopedia/create.html",{
+            "message": f"An entry with '{title}' Title is already exists"
+        })
+        # Save the new entry
+        util.save_entry(title, content)
+
+        return HttpResponseRedirect(reverse("entry",args=[title]))
+    
+    # If GET request, show the create form
+    return render(request, "encyclopedia/create.html")

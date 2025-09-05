@@ -1,0 +1,27 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Create New Page
+{% endblock %}
+
+{% block body %}
+<h1>Create New Entry</h1>
+
+    {% if message %}
+        <div style="color: red;">
+            {{ message }}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title" required><br><br>
+
+        <label for="content">Content (Markdown):</label><br>
+        <textarea id="content" name="content" rows="10" cols="80" required style="height:60vh;"></textarea><br><br>
+
+        <button type="submit">Save</button>
+    </form>
+
+{% endblock %}
