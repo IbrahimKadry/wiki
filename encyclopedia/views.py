@@ -18,7 +18,7 @@ def entry(request, title):
     # لو مفيش مقالة بنفس الاسم بيرجع None 
     if content == None:
         return render(request, "encyclopedia/error.html",{
-            "title": title,
+            "title": "Not Found",
             "message":"The requested page was not found."
         })
     
@@ -61,20 +61,37 @@ def create(request):
         title = request.POST.get("title")
         content = request.POST.get("content")
         
-        # Check if entry already exists
         if title.lower() in [entry.lower() for entry in util.list_entries()]:
             return render(request, "encyclopedia/create.html",{
             "message": f"An entry with '{title}' Title is already exists"
         })
-        # Save the new entry
+
         util.save_entry(title, content)
 
         return HttpResponseRedirect(reverse("entry",args=[title]))
     
-    # If GET request, show the create form
     return render(request, "encyclopedia/create.html")
 
 def random_page(request):
     entries = util.list_entries()
     chosen_entry = random.choice(entries)
     return redirect("entry", title=chosen_entry)
+
+def edit(request, title):
+    if request.method == "POST":
+        new_content = request.POST.get("content")
+        new_content = new_content.replace('\r\n', '\n').replace('\r', '\n')
+        util.save_entry(title, new_content)
+        return redirect("entry", title=title)
+    
+    content = util.get_entry(title) 
+    if content is None:
+        return render(request, "encyclopedia/error.html",{
+            "title": "Not Found",
+            "message":"The requested page was not found."
+        })
+    
+    return render(request, "encyclopedia/edit.html",{
+        "title":title,
+        "content":content
+    })
